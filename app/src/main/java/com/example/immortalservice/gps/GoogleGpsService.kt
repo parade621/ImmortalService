@@ -20,7 +20,7 @@ class GoogleGpsService : Service() {
 
     companion object {
         const val NOTIFICATION_ID = 1
-        const val channelId = "GPS_Fused_Provider"
+        const val channelId = "GPS_Service"
     }
 
     private lateinit var googleWorker: GoogleWorker
@@ -63,11 +63,8 @@ class GoogleGpsService : Service() {
         val pendingIntent =
             PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
 
-        val resourceId = R.drawable.check_on
-        Log.e("log","됨?????")
-
         return NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(resourceId)
+            .setSmallIcon(R.drawable.check_on)
             .setContentTitle("GPS Immortal Service")
             .setContentText("Location is Running in the Background")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
