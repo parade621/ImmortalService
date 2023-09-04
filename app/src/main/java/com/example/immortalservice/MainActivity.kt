@@ -30,14 +30,12 @@ class MainActivity : AppCompatActivity() {
         } else {
             val deniedPermissions = permissions.filter { permissionsMap[it] != true }
 
-            deniedPermissions.forEach { permission ->
-                if (!shouldShowRequestPermissionRationale(permission)) {
-                    // 사용자가 권한 요청을 거절하고 다시 묻지 않음 옵션을 선택한 경우
-                    showSettingsDialog()
-                } else {
-                    // 사용자가 권한 요청을 거절한 경우
-                    showRationaleDialog()
-                }
+            if (deniedPermissions.any { shouldShowRequestPermissionRationale(it) }) {
+                // 사용자가 권한 요청을 거절한 경우
+                showRationaleDialog(deniedPermissions.toTypedArray())
+            } else {
+                // 사용자가 권한 요청을 거절하고 다시 묻지 않음 옵션을 선택한 경우
+                showSettingsDialog()
             }
         }
     }
@@ -55,16 +53,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showRationaleDialog() {
+    private fun showRationaleDialog(deniedPermissions: Array<String>) {
         // 권한을 거절했을 때 그 이유를 설명하는 다이얼로그
         AlertDialog.Builder(this)
             .setMessage("이 기능을 사용하기 위해 권한이 필요합니다.")
             .setPositiveButton("다시 요청") { _, _ ->
-                requestPermissionsLauncher.launch(permissions)
+                requestPermissionsLauncher.launch(deniedPermissions)
             }
             .setNegativeButton("취소", null)
             .show()
     }
+
 
     private fun showSettingsDialog() {
         // 설정 화면으로 이동하여 권한을 수동으로 활성화하도록 유도하는 다이얼로그
