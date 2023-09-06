@@ -5,12 +5,28 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.Observer
+import com.example.immortalservice.databinding.ActivityMainBinding
 import com.example.immortalservice.gps.GpsData
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
+    private val isServiceRunning = Observer<Boolean> { isRunning ->
+        if (!isRunning) {
+            Log.e("tag","감지!")
+            GpsData.startGpsService(this@MainActivity)
+            GpsData.isServiceRunning.postValue(true)
+        }
+    }
+
+    private val binding : ActivityMainBinding by lazy{
+        ActivityMainBinding.inflate(layoutInflater)
+    }
     // 권한 목록
     val permissions =
         arrayOf(
@@ -42,16 +58,26 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
 
+        Timber.e("create!")
+
+        binding.apply{
+            mainActivity=this@MainActivity
+        }
+
+        GpsData.isServiceRunning.observe(this, isServiceRunning)
+        GpsData.startGpsService(this@MainActivity)
         // 권한 요청
         requestPermissionsLauncher.launch(permissions)
-
-        if(isAllPermissionGrant) {
-            // 서비스 시작
-            GpsData.startGpsService(this@MainActivity)
-        }
     }
+
+    fun stopService(){
+        GpsData.stopGpsService(this@MainActivity)
+        Toast.makeText(this@MainActivity, "Service Stop",Toast.LENGTH_SHORT).show()
+    }
+
+
 
     private fun showRationaleDialog(deniedPermissions: Array<String>) {
         // 권한을 거절했을 때 그 이유를 설명하는 다이얼로그

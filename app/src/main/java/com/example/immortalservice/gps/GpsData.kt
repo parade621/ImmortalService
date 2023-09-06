@@ -14,24 +14,29 @@ object GpsData {
     var accuracy = 0.0
     var lastUpdatedTime: Long = 0
 
-    fun isServiceRun(context: Context): Boolean {
-        if (isServiceRunning.value == true) {
-            return true
-        }
 
-        return false
-    }
 
     fun startGpsService(context: Context) {
-        val intent = Intent(context, GoogleGpsService::class.java)
-        ContextCompat.startForegroundService(context, intent)
-        Toast.makeText(context, "Service Start", Toast.LENGTH_SHORT).show()
+        if(!isServiceRun(context)) {
+            val intent = Intent(context, GoogleGpsService::class.java)
+            ContextCompat.startForegroundService(context, intent)
+            Toast.makeText(context, "Service Start", Toast.LENGTH_SHORT).show()
+        }
     }
 
     fun stopGpsService(context: Context) {
-        val intent = Intent(context, GoogleGpsService::class.java)
-        context.stopService(intent)
+        if(isServiceRun(context)) {
+            val intent = Intent(context, GoogleGpsService::class.java)
+            context.stopService(intent)
+        }
 
+    }
+
+    private fun isServiceRun(context: Context): Boolean {
+        if (isServiceRunning.value == true) {
+            return true
+        }
+        return false
     }
 
 }
