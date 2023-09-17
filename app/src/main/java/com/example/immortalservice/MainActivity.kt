@@ -18,15 +18,16 @@ class MainActivity : AppCompatActivity() {
 
     private val isServiceRunning = Observer<Boolean> { isRunning ->
         if (!isRunning) {
-            Log.e("tag","감지!")
+            Log.e("tag", "감지!")
             GpsData.startGpsService(this@MainActivity)
             GpsData.isServiceRunning.postValue(true)
         }
     }
 
-    private val binding : ActivityMainBinding by lazy{
+    private val binding: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
+
     // 권한 목록
     val permissions =
         arrayOf(
@@ -35,26 +36,28 @@ class MainActivity : AppCompatActivity() {
             android.Manifest.permission.POST_NOTIFICATIONS
         )
 
-    private var isAllPermissionGrant:Boolean = false
+    private var isAllPermissionGrant: Boolean = false
 
     // 권한 요청 코드
-    private val requestPermissionsLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissionsMap ->
-        // 결과 처리. permissionsMap은 권한 이름을 키로, Boolean 값을 값으로 가집니다.
+    private val requestPermissionsLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissionsMap ->
+            // 결과 처리. permissionsMap은 권한 이름을 키로, Boolean 값을 값으로 가집니다.
 
-        if (permissions.all { permissionsMap[it] == true }) {
-            isAllPermissionGrant = true
-        } else {
-            val deniedPermissions = permissions.filter { permissionsMap[it] != true }
-
-            if (deniedPermissions.any { shouldShowRequestPermissionRationale(it) }) {
-                // 사용자가 권한 요청을 거절한 경우
-                showRationaleDialog(deniedPermissions.toTypedArray())
+            if (permissions.all { permissionsMap[it] == true }) {
+                isAllPermissionGrant = true
             } else {
-                // 사용자가 권한 요청을 거절하고 다시 묻지 않음 옵션을 선택한 경우
-                showSettingsDialog()
+                val deniedPermissions = permissions.filter { permissionsMap[it] != true }
+
+                if (deniedPermissions.any { shouldShowRequestPermissionRationale(it) }) {
+                    // 사용자가 권한 요청을 거절한 경우
+                    //showRationaleDialog(deniedPermissions.toTypedArray())
+                    //showRationaleDialog(deniedPermissions.toTypedArray())
+                } else {
+                    // 사용자가 권한 요청을 거절하고 다시 묻지 않음 옵션을 선택한 경우
+                    showSettingsDialog()
+                }
             }
         }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,8 +65,8 @@ class MainActivity : AppCompatActivity() {
 
         Timber.e("create!")
 
-        binding.apply{
-            mainActivity=this@MainActivity
+        binding.apply {
+            mainActivity = this@MainActivity
         }
 
         GpsData.isServiceRunning.observe(this, isServiceRunning)
@@ -72,11 +75,10 @@ class MainActivity : AppCompatActivity() {
         requestPermissionsLauncher.launch(permissions)
     }
 
-    fun stopService(){
+    fun stopService() {
         GpsData.stopGpsService(this@MainActivity)
-        Toast.makeText(this@MainActivity, "Service Stop",Toast.LENGTH_SHORT).show()
+        Toast.makeText(this@MainActivity, "Service Stop", Toast.LENGTH_SHORT).show()
     }
-
 
 
     private fun showRationaleDialog(deniedPermissions: Array<String>) {
