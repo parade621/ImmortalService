@@ -63,8 +63,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        Timber.e("create!")
-
         binding.apply {
             mainActivity = this@MainActivity
         }

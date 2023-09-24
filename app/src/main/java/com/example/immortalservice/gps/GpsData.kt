@@ -6,7 +6,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 
-object GpsData {
+object  GpsData {
     val isServiceRunning = MutableLiveData<Boolean>(false)
 
     var lat = 0.0
