@@ -28,7 +28,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".gps.GoogleGpsService"
+            android:name=".gps.GpsService"
             android:foregroundServiceType="location" />
     </application>
 

@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
 
     private val isServiceRunning = Observer<Boolean> { isRunning ->
         if (!isRunning) {
-            Log.e("tag", "감지!")
+            Timber.e("service 상태 변화 감지")
             GpsData.startGpsService(this@MainActivity)
             GpsData.isServiceRunning.postValue(true)
         }
@@ -41,16 +41,18 @@ class MainActivity : AppCompatActivity() {
     // 권한 요청 코드
     private val requestPermissionsLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissionsMap ->
-            // 결과 처리. permissionsMap은 권한 이름을 키로, Boolean 값을 값으로 가집니다.
+            // 결과 처리. permissionsMap은 권한 이름을 키로, Boolean 값을 값으로 가진다.
 
             if (permissions.all { permissionsMap[it] == true }) {
                 isAllPermissionGrant = true
+                GpsData.isServiceRunning.observe(this, isServiceRunning)
+                GpsData.startGpsService(this@MainActivity)
             } else {
                 val deniedPermissions = permissions.filter { permissionsMap[it] != true }
 
                 if (deniedPermissions.any { shouldShowRequestPermissionRationale(it) }) {
                     // 사용자가 권한 요청을 거절한 경우
-                    //showRationaleDialog(deniedPermissions.toTypedArray())
+                    // 해당 부분에 요청을 거절한 경우의 메시지를 설정할 수 있다.
                     //showRationaleDialog(deniedPermissions.toTypedArray())
                 } else {
                     // 사용자가 권한 요청을 거절하고 다시 묻지 않음 옵션을 선택한 경우
@@ -67,8 +69,6 @@ class MainActivity : AppCompatActivity() {
             mainActivity = this@MainActivity
         }
 
-        GpsData.isServiceRunning.observe(this, isServiceRunning)
-        GpsData.startGpsService(this@MainActivity)
         // 권한 요청
         requestPermissionsLauncher.launch(permissions)
     }
